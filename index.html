@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestore Torneo Fantacalcio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(45deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            background: #f8f9fa;
+            padding: 5px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background: #3498db;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .setup-section, .match-input-section, .results-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .setup-section h3, .match-input-section h3, .results-section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+        }
+
+        .groups-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .group {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .group h4 {
+            color: #3498db;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        .team-input {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .team-input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .match-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .match-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: 2px solid #e0e0e0;
+        }
+
+        .calendar-match-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: 2px solid #e0e0e0;
+        }
+
+        .match-teams {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .calendar-teams {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-align: center;
+        }
+
+        .team-name {
+            font-weight: 600;
+            color: #2c3e50;
+            flex: 1;
+            text-align: center;
+        }
+
+        .calendar-team-name {
+            font-weight: 600;
+            color: #2c3e50;
+            flex: 1;
+        }
+
+        .vs {
+            margin: 0 15px;
+            font-weight: bold;
+            color: #7f8c8d;
+        }
+
+        .score-inputs {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .score-input {
+            width: 80px;
+            padding: 10px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .score-input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .match-result {
+            text-align: center;
+            margin-top: 10px;
+            padding: 8px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .match-result.win {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .match-result.draw {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .standings-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .standings-table th,
+        .standings-table td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .standings-table th {
+            background: #3498db;
+            color: white;
+            font-weight: 600;
+        }
+
+        .standings-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .position {
+            font-weight: bold;
+            color: #3498db;
+        }
+
+        .current-round {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .round-selector {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .round-selector select {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            background: white;
+        }
+
+        .team-select {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            min-width: 150px;
+            background: white;
+        }
+
+        .team-select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .match-setup-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .match-setup-card h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .round-matches-list {
+            margin-top: 20px;
+        }
+
+        .scheduled-match {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid #3498db;
+        }
+
+        .scheduled-match .teams {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .delete-match {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .delete-match:hover {
+            background: #c0392b;
+        }
+
+        .results-display {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .result-match-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            border-left: 4px solid #3498db;
+        }
+
+        .result-teams {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .result-score {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        .result-winner {
+            text-align: center;
+            font-weight: 600;
+            color: #27ae60;
+            margin-top: 5px;
+        }
+
+        .no-results {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            grid-column: 1 / -1;
+            padding: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .match-teams {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .score-inputs {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏆 Gestore Torneo Fantacalcio</h1>
+            <p>Sistema completo per la gestione del tuo torneo</p>
+        </div>
+        
+        <div class="content">
+            <!-- Admin Access -->
+            <div style="text-align: center; margin-bottom: 20px;">
+                <span onclick="enableAdminMode()" style="color: #bdc3c7; font-size: 12px; cursor: pointer; user-select: none;" title="Clicca per Admin">⚙️</span>
+            </div>
+
+            <div class="tabs">
+                <div class="tab" onclick="switchTab('setup')" style="display: none;">⚙️ Setup</div>
+                <div class="tab active" onclick="switchTab('matches')">📅 Calendario & Risultati</div>
+                <div class="tab" onclick="switchTab('standings')">📊 Classifica</div>
+            </div>
+
+            <!-- Setup Tab -->
+            <div id="setup" class="tab-content">
+                <div class="setup-section">
+                    <h3>🏟️ Configurazione Squadre</h3>
+                    <div class="groups-container">
+                        <div class="group">
+                            <h4>Girone A</h4>
+                            <input type="text" class="team-input" placeholder="Nome squadra 1" data-group="A" data-team="0">
+                            <input type="text" class="team-input" placeholder="Nome squadra 2" data-group="A" data-team="1">
+                            <input type="text" class="team-input" placeholder="Nome squadra 3" data-group="A" data-team="2">
+                            <input type="text" class="team-input" placeholder="Nome squadra 4" data-group="A" data-team="3">
+                        </div>
+                        <div class="group">
+                            <h4>Girone B</h4>
+                            <input type="text" class="team-input" placeholder="Nome squadra 1" data-group="B" data-team="0">
+                            <input type="text" class="team-input" placeholder="Nome squadra 2" data-group="B" data-team="1">
+                            <input type="text" class="team-input" placeholder="Nome squadra 3" data-group="B" data-team="2">
+                            <input type="text" class="team-input" placeholder="Nome squadra 4" data-group="B" data-team="3">
+                        </div>
+                        <div class="group">
+                            <h4>Girone C</h4>
+                            <input type="text" class="team-input" placeholder="Nome squadra 1" data-group="C" data-team="0">
+                            <input type="text" class="team-input" placeholder="Nome squadra 2" data-group="C" data-team="1">
+                            <input type="text" class="team-input" placeholder="Nome squadra 3" data-group="C" data-team="2">
+                            <input type="text" class="team-input" placeholder="Nome squadra 4" data-group="C" data-team="3">
+                        </div>
+                        <div class="group">
+                            <h4>Girone D</h4>
+                            <input type="text" class="team-input" placeholder="Nome squadra 1" data-group="D" data-team="0">
+                            <input type="text" class="team-input" placeholder="Nome squadra 2" data-group="D" data-team="1">
+                            <input type="text" class="team-input" placeholder="Nome squadra 3" data-group="D" data-team="2">
+                            <input type="text" class="team-input" placeholder="Nome squadra 4" data-group="D" data-team="3">
+                        </div>
+                    </div>
+                    <div style="text-align: center;">
+                        <button class="btn" onclick="saveTeams()">💾 Salva Squadre</button>
+                        <button class="btn" onclick="resetTournament()">🔄 Reset Torneo</button>
+                    </div>
+                </div>
+
+                <div class="setup-section">
+                    <h3>📅 Configurazione Calendario</h3>
+                    <p style="margin-bottom: 20px; color: #666;">Inserisci il calendario già stabilito. Seleziona la giornata e aggiungi le partite una per volta.</p>
+                    
+                    <div class="round-selector">
+                        <label for="setupRoundSelect">Giornata da configurare: </label>
+                        <select id="setupRoundSelect" onchange="showSetupForRound(this.value)">
+                            <option value="1">Giornata 1</option>
+                            <option value="2">Giornata 2</option>
+                            <option value="3">Giornata 3</option>
+                            <option value="4">Giornata 4</option>
+                            <option value="5">Giornata 5</option>
+                            <option value="6">Giornata 6</option>
+                            <option value="7">Giornata 7</option>
+                            <option value="8">Giornata 8</option>
+                            <option value="9">Giornata 9</option>
+                        </select>
+                    </div>
+
+                    <div id="calendarSetup">
+                        <div class="match-setup-container">
+                            <div class="match-setup-card">
+                                <h4>Aggiungi Partita alla Giornata <span id="currentSetupRound">1</span></h4>
+                                <div class="match-setup-form">
+                                    <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 15px;">
+                                        <select id="team1Select" class="team-select">
+                                            <option value="">Seleziona Squadra 1</option>
+                                        </select>
+                                        <div class="vs">VS</div>
+                                        <select id="team2Select" class="team-select">
+                                            <option value="">Seleziona Squadra 2</option>
+                                        </select>
+                                        <button class="btn" onclick="addMatchToRound()" style="margin: 0;">➕ Aggiungi</button>
+                                    </div>
+                                </div>
+                                <div id="roundMatchesList" class="round-matches-list">
+                                    <!-- Matches for current round will be shown here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="setup-section">
+                    <h3>⚽ Inserimento Risultati</h3>
+                    <div class="round-selector">
+                        <label for="adminRoundSelect">Seleziona Giornata: </label>
+                        <select id="adminRoundSelect" onchange="displayAdminRound(this.value)">
+                            <!-- Options will be generated dynamically -->
+                        </select>
+                    </div>
+
+                    <div class="match-input-section">
+                        <h3>Inserisci Risultati - Giornata <span id="adminRoundDisplay">1</span></h3>
+                        <div id="adminMatchesContainer" class="match-container">
+                            <!-- Matches will be generated here -->
+                        </div>
+                        <div style="text-align: center; margin-top: 20px;">
+                            <button class="btn" onclick="calculateResults()">📊 Calcola Risultati</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Matches Tab -->
+            <div id="matches" class="tab-content active">
+                <div class="current-round">
+                    <h2>Visualizza Giornata</h2>
+                </div>
+                
+                <div class="round-selector">
+                    <label for="roundSelect">Seleziona Giornata: </label>
+                    <select id="roundSelect" onchange="displayRoundView(this.value)">
+                        <!-- Options will be generated dynamically -->
+                    </select>
+                </div>
+
+                <!-- Calendar Display Section -->
+                <div class="match-input-section">
+                    <h3>📅 Calendario - Giornata <span id="currentRoundDisplayCalendar">1</span></h3>
+                    <div id="calendarContainer" class="match-container">
+                        <!-- Calendar matches will be shown here -->
+                    </div>
+                </div>
+
+                <!-- Results Summary Section -->
+                <div class="results-section">
+                    <h3>📋 Risultati - Giornata <span id="currentRoundDisplayResults">1</span></h3>
+                    <div id="resultsDisplay" class="results-display">
+                        <!-- Results will be displayed here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Standings Tab -->
+            <div id="standings" class="tab-content">
+                <div class="results-section">
+                    <h3>🏆 Classifiche per Girone</h3>
+                    <div id="standingsContainer">
+                        <!-- Standings will be generated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let tournament = {
+            teams: {
+                A: [],
+                B: [],
+                C: [],
+                D: []
+            },
+            matches: [],
+            currentRound: 1,
+            totalRounds: 9,
+            standings: {
+                A: [],
+                B: [],
+                C: [],
+                D: []
+            }
+        };
+
+        // Load saved data
+        function loadTournament() {
+            const saved = localStorage.getItem('fantacalcio_tournament');
+            if (saved) {
+                tournament = JSON.parse(saved);
+                // Populate team inputs
+                Object.keys(tournament.teams).forEach(group => {
+                    tournament.teams[group].forEach((team, index) => {
+                        const input = document.querySelector(`[data-group="${group}"][data-team="${index}"]`);
+                        if (input) input.value = team;
+                    });
+                });
+                updateRoundSelector();
+                updateAdminRoundSelector();
+                displayRoundView(tournament.currentRound);
+                displayAdminRound(tournament.currentRound);
+                updateStandings();
+            }
+        }
+
+        // Save tournament data
+        function saveTournament() {
+            localStorage.setItem('fantacalcio_tournament', JSON.stringify(tournament));
+        }
+
+        // Enable admin mode
+        function enableAdminMode() {
+            const setupTab = document.querySelector('.tab[onclick="switchTab(\'setup\')"]');
+            if (setupTab) {
+                setupTab.style.display = 'block';
+                alert('Modalità Admin attivata!');
+            }
+        }
+
+        // Switch tabs
+        function switchTab(tabName) {
+            // Remove active from all tabs and contents
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Add active to selected tab and content
+            const selectedTab = document.querySelector(`[onclick="switchTab('${tabName}')"]`);
+            if (selectedTab) selectedTab.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+            
+            // Update displays when switching to matches
+            if (tabName === 'matches') {
+                updateRoundSelector();
+                displayRoundView(tournament.currentRound);
+            } else if (tabName === 'setup') {
+                updateAdminRoundSelector();
+                showSetupForRound(1);
+            }
+        }
+
+        // Save team names only
+        function saveTeams() {
+            const teamInputs = document.querySelectorAll('.team-input');
+            let allTeamsFilled = true;
+            
+            teamInputs.forEach(input => {
+                const group = input.dataset.group;
+                const teamIndex = parseInt(input.dataset.team);
+                const teamName = input.value.trim();
+                
+                if (!teamName) {
+                    allTeamsFilled = false;
+                    tournament.teams[group][teamIndex] = `Squadra ${group}${teamIndex + 1}`;
+                } else {
+                    tournament.teams[group][teamIndex] = teamName;
+                }
+            });
+
+            // Initialize empty matches and standings
+            tournament.matches = [];
+            initializeStandings();
+            updateTeamSelectors();
+            
+            saveTournament();
+            alert(allTeamsFilled ? 'Squadre salvate! Ora puoi configurare il calendario.' : 'Squadre salvate! I nomi mancanti sono stati generati automaticamente.');
+        }
+
+        // Update team selectors for calendar setup
+        function updateTeamSelectors() {
+            const team1Select = document.getElementById('team1Select');
+            const team2Select = document.getElementById('team2Select');
+            
+            if (!team1Select || !team2Select) return;
+            
+            // Clear existing options
+            team1Select.innerHTML = '<option value="">Seleziona Squadra 1</option>';
+            team2Select.innerHTML = '<option value="">Seleziona Squadra 2</option>';
+            
+            // Add all teams from all groups
+            Object.keys(tournament.teams).forEach(group => {
+                tournament.teams[group].forEach((team, index) => {
+                    if (team) {
+                        const option1 = document.createElement('option');
+                        option1.value = `${group}-${index}`;
+                        option1.textContent = `${team} (Girone ${group})`;
+                        team1Select.appendChild(option1);
+                        
+                        const option2 = document.createElement('option');
+                        option2.value = `${group}-${index}`;
+                        option2.textContent = `${team} (Girone ${group})`;
+                        team2Select.appendChild(option2);
+                    }
+                });
+            });
+        }
+
+        // Show setup for specific round
+        function showSetupForRound(round) {
+            document.getElementById('currentSetupRound').textContent = round;
+            displayRoundMatches(parseInt(round));
+        }
+
+        // Display matches for a round in setup mode
+        function displayRoundMatches(round) {
+            const container = document.getElementById('roundMatchesList');
+            const roundMatches = tournament.matches.filter(match => match.round === round);
+            
+            if (roundMatches.length === 0) {
+                container.innerHTML = '<p style="color: #666; text-align: center; margin: 20px 0;">Nessuna partita programmata per questa giornata</p>';
+                return;
+            }
+            
+            container.innerHTML = '<h5 style="color: #2c3e50; margin-bottom: 15px;">Partite programmate:</h5>' +
+                roundMatches.map((match, index) => `
+                    <div class="scheduled-match">
+                        <div class="teams">${match.team1} vs ${match.team2}</div>
+                        <button class="delete-match" onclick="removeMatch(${round}, ${index})">🗑️ Rimuovi</button>
+                    </div>
+                `).join('');
+        }
+
+        // Add match to current round
+        function addMatchToRound() {
+            const round = parseInt(document.getElementById('setupRoundSelect').value);
+            const team1Value = document.getElementById('team1Select').value;
+            const team2Value = document.getElementById('team2Select').value;
+            
+            if (!team1Value || !team2Value) {
+                alert('Seleziona entrambe le squadre!');
+                return;
+            }
+            
+            if (team1Value === team2Value) {
+                alert('Una squadra non può giocare contro se stessa!');
+                return;
+            }
+            
+            // Parse team values
+            const [group1, index1] = team1Value.split('-');
+            const [group2, index2] = team2Value.split('-');
+            
+            const team1Name = tournament.teams[group1][parseInt(index1)];
+            const team2Name = tournament.teams[group2][parseInt(index2)];
+            
+            // Check if match already exists
+            const matchExists = tournament.matches.some(match => 
+                match.round === round &&
+                ((match.team1 === team1Name && match.team2 === team2Name) ||
+                 (match.team1 === team2Name && match.team2 === team1Name))
+            );
+            
+            if (matchExists) {
+                alert('Questa partita è già stata programmata per questa giornata!');
+                return;
+            }
+            
+            // Add match
+            const newMatch = {
+                round: round,
+                group: group1, // We'll use the first team's group for sorting
+                team1: team1Name,
+                team2: team2Name,
+                team1Index: parseInt(index1),
+                team2Index: parseInt(index2),
+                team1Group: group1,
+                team2Group: group2,
+                score1: '',
+                score2: '',
+                played: false
+            };
+            
+            tournament.matches.push(newMatch);
+            
+            // Reset selectors
+            document.getElementById('team1Select').value = '';
+            document.getElementById('team2Select').value = '';
+            
+            // Update display
+            displayRoundMatches(round);
+            updateRoundSelector();
+            updateAdminRoundSelector();
+            saveTournament();
+        }
+
+        // Remove match from round
+        function removeMatch(round, matchIndex) {
+            const roundMatches = tournament.matches.filter(match => match.round === round);
+            const matchToRemove = roundMatches[matchIndex];
+            
+            // Find and remove from main matches array
+            const mainIndex = tournament.matches.indexOf(matchToRemove);
+            if (mainIndex > -1) {
+                tournament.matches.splice(mainIndex, 1);
+            }
+            
+            displayRoundMatches(round);
+            updateRoundSelector();
+            updateAdminRoundSelector();
+            saveTournament();
+        }
+
+        // Initialize standings
+        function initializeStandings() {
+            tournament.standings = {
+                A: [],
+                B: [],
+                C: [],
+                D: []
+            };
+
+            Object.keys(tournament.teams).forEach(group => {
+                tournament.teams[group].forEach((team, index) => {
+                    tournament.standings[group].push({
+                        team: team,
+                        teamIndex: index,
+                        played: 0,
+                        won: 0,
+                        drawn: 0,
+                        lost: 0,
+                        goalsFor: 0,
+                        goalsAgainst: 0,
+                        goalDifference: 0,
+                        points: 0
+                    });
+                });
+            });
+        }
+
+        // Update round selector
+        function updateRoundSelector() {
+            const select = document.getElementById('roundSelect');
+            select.innerHTML = '';
+            for (let i = 1; i <= tournament.totalRounds; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = `Giornata ${i}`;
+                if (i === tournament.currentRound) option.selected = true;
+                select.appendChild(option);
+            }
+        }
+
+        // Display round for viewing (calendar + results)
+        function displayRoundView(round) {
+            tournament.currentRound = parseInt(round);
+            document.getElementById('currentRoundDisplayCalendar').textContent = round;
+            document.getElementById('currentRoundDisplayResults').textContent = round;
+            
+            // Display calendar
+            const calendarContainer = document.getElementById('calendarContainer');
+            const roundMatches = tournament.matches.filter(match => match.round === tournament.currentRound);
+            
+            if (roundMatches.length === 0) {
+                calendarContainer.innerHTML = '<div class="no-results">Nessuna partita programmata per questa giornata</div>';
+            } else {
+                calendarContainer.innerHTML = '';
+                roundMatches.forEach(match => {
+                    const matchCard = createCalendarCard(match);
+                    calendarContainer.appendChild(matchCard);
+                });
+            }
+            
+            // Display results
+            displayResultsForRound(round);
+            saveTournament();
+        }
+
+        // Display admin round for results input
+        function displayAdminRound(round) {
+            tournament.currentRound = parseInt(round);
+            document.getElementById('adminRoundDisplay').textContent = round;
+            
+            const container = document.getElementById('adminMatchesContainer');
+            container.innerHTML = '';
+
+            const roundMatches = tournament.matches.filter(match => match.round === tournament.currentRound);
+            
+            if (roundMatches.length === 0) {
+                container.innerHTML = '<div class="no-results">Nessuna partita programmata per questa giornata</div>';
+                return;
+            }
+            
+            roundMatches.forEach((match, index) => {
+                const matchCard = createAdminMatchCard(match, index);
+                container.appendChild(matchCard);
+            });
+
+            saveTournament();
+        }
+
+        // Create calendar card (read-only)
+        function createCalendarCard(match) {
+            const div = document.createElement('div');
+            div.className = 'calendar-match-card';
+            div.innerHTML = `
+                <div class="calendar-teams">
+                    <div class="calendar-team-name">${match.team1}</div>
+                    <div class="vs">VS</div>
+                    <div class="calendar-team-name">${match.team2}</div>
+                </div>
+            `;
+            return div;
+        }
+
+        // Create admin match card for results input
+        function createAdminMatchCard(match, index) {
+            const div = document.createElement('div');
+            div.className = 'match-card';
+            div.innerHTML = `
+                <div class="match-teams">
+                    <div class="team-name">${match.team1}</div>
+                    <div class="vs">VS</div>
+                    <div class="team-name">${match.team2}</div>
+                </div>
+                <div class="score-inputs">
+                    <input type="number" class="score-input" placeholder="0" 
+                           value="${match.score1}" 
+                           onchange="updateAdminMatchScore(${index}, 1, this.value)">
+                    <div style="font-weight: bold; color: #7f8c8d;">-</div>
+                    <input type="number" class="score-input" placeholder="0" 
+                           value="${match.score2}" 
+                           onchange="updateAdminMatchScore(${index}, 2, this.value)">
+                </div>
+                <div class="match-result" id="admin-result-${index}">
+                    ${getMatchResult(match)}
+                </div>
+            `;
+            return div;
+        }
+
+        // Update admin match score
+        function updateAdminMatchScore(matchIndex, teamNumber, score) {
+            const roundMatches = tournament.matches.filter(match => match.round === tournament.currentRound);
+            const match = roundMatches[matchIndex];
+            
+            if (teamNumber === 1) {
+                match.score1 = score;
+            } else {
+                match.score2 = score;
+            }
+
+            match.played = match.score1 !== '' && match.score2 !== '';
+            
+            // Update result display
+            document.getElementById(`admin-result-${matchIndex}`).innerHTML = getMatchResult(match);
+            document.getElementById(`admin-result-${matchIndex}`).className = `match-result ${getMatchResultClass(match)}`;
+            
+            saveTournament();
+        }
+
+        // Display results for a specific round
+        function displayResultsForRound(round) {
+            const container = document.getElementById('resultsDisplay');
+            const roundMatches = tournament.matches.filter(match => match.round === parseInt(round));
+            
+            if (roundMatches.length === 0) {
+                container.innerHTML = '<div class="no-results">Nessuna partita programmata per questa giornata</div>';
+                return;
+            }
+            
+            const playedMatches = roundMatches.filter(match => match.played);
+            
+            if (playedMatches.length === 0) {
+                container.innerHTML = '<div class="no-results">Nessun risultato disponibile per questa giornata</div>';
+                return;
+            }
+            
+            container.innerHTML = playedMatches.map(match => `
+                <div class="result-match-card">
+                    <div class="result-teams">
+                        <strong>${match.team1}</strong>
+                        <span>VS</span>
+                        <strong>${match.team2}</strong>
+                    </div>
+                    <div class="result-score">${match.score1} - ${match.score2}</div>
+                    <div class="result-winner">${getMatchResult(match)}</div>
+                </div>
+            `).join('');
+        }
+
+        // Get match result text
+        function getMatchResult(match) {
+            if (!match.played || match.score1 === '' || match.score2 === '') {
+                return 'Inserisci i punteggi';
+            }
+            
+            const score1 = parseFloat(match.score1);
+            const score2 = parseFloat(match.score2);
+            
+            if (score1 > score2) {
+                return `Vince ${match.team1}`;
+            } else if (score2 > score1) {
+                return `Vince ${match.team2}`;
+            } else {
+                return 'Pareggio';
+            }
+        }
+
+        // Get match result CSS class
+        function getMatchResultClass(match) {
+            if (!match.played || match.score1 === '' || match.score2 === '') {
+                return '';
+            }
+            
+            const score1 = parseFloat(match.score1);
+            const score2 = parseFloat(match.score2);
+            
+            if (score1 === score2) {
+                return 'draw';
+            } else {
+                return 'win';
+            }
+        }
+
+        // Calculate and update all results
+        function calculateResults() {
+            // Reset standings
+            initializeStandings();
+            
+            // Calculate results for all played matches
+            tournament.matches.forEach(match => {
+                if (match.played && match.score1 !== '' && match.score2 !== '') {
+                    const score1 = parseFloat(match.score1);
+                    const score2 = parseFloat(match.score2);
+                    
+                    // Find team stats (handle cross-group matches)
+                    let team1Stats, team2Stats;
+                    
+                    if (match.team1Group && match.team2Group) {
+                        // Cross-group match
+                        team1Stats = tournament.standings[match.team1Group].find(s => s.teamIndex === match.team1Index);
+                        team2Stats = tournament.standings[match.team2Group].find(s => s.teamIndex === match.team2Index);
+                    } else {
+                        // Same group match (legacy)
+                        team1Stats = tournament.standings[match.group].find(s => s.teamIndex === match.team1Index);
+                        team2Stats = tournament.standings[match.group].find(s => s.teamIndex === match.team2Index);
+                    }
+                    
+                    if (!team1Stats || !team2Stats) return; // Skip if teams not found
+                    
+                    // Update basic stats
+                    team1Stats.played++;
+                    team2Stats.played++;
+                    team1Stats.goalsFor += score1;
+                    team1Stats.goalsAgainst += score2;
+                    team2Stats.goalsFor += score2;
+                    team2Stats.goalsAgainst += score1;
+                    
+                    // Determine winner and update points
+                    if (score1 > score2) {
+                        team1Stats.won++;
+                        team2Stats.lost++;
+                        team1Stats.points += 3;
+                    } else if (score2 > score1) {
+                        team2Stats.won++;
+                        team1Stats.lost++;
+                        team2Stats.points += 3;
+                    } else {
+                        team1Stats.drawn++;
+                        team2Stats.drawn++;
+                        team1Stats.points += 1;
+                        team2Stats.points += 1;
+                    }
+                    
+                    // Calculate goal difference
+                    team1Stats.goalDifference = team1Stats.goalsFor - team1Stats.goalsAgainst;
+                    team2Stats.goalDifference = team2Stats.goalsFor - team2Stats.goalsAgainst;
+                }
+            });
+            
+            // Sort standings
+            Object.keys(tournament.standings).forEach(group => {
+                tournament.standings[group].sort((a, b) => {
+                    if (b.points !== a.points) return b.points - a.points;
+                    if (b.goalDifference !== a.goalDifference) return b.goalDifference - a.goalDifference;
+                    return b.goalsFor - a.goalsFor;
+                });
+            });
+            
+            updateStandings();
+            saveTournament();
+            
+            alert('Risultati calcolati e classifiche aggiornate!');
+        }
+
+        // Update standings display
+        function updateStandings() {
+            const container = document.getElementById('standingsContainer');
+            container.innerHTML = '';
+            
+            Object.keys(tournament.standings).forEach(group => {
+                const groupDiv = document.createElement('div');
+                groupDiv.style.marginBottom = '30px';
+                
+                const table = document.createElement('table');
+                table.className = 'standings-table';
+                
+                table.innerHTML = `
+                    <thead>
+                        <tr>
+                            <th colspan="9">🏆 Girone ${group}</th>
+                        </tr>
+                        <tr>
+                            <th>Pos</th>
+                            <th>Squadra</th>
+                            <th>G</th>
+                            <th>V</th>
+                            <th>N</th>
+                            <th>P</th>
+                            <th>GF</th>
+                            <th>GS</th>
+                            <th>Pt</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tournament.standings[group].map((team, index) => `
+                            <tr>
+                                <td class="position">${index + 1}</td>
+                                <td><strong>${team.team}</strong></td>
+                                <td>${team.played}</td>
+                                <td>${team.won}</td>
+                                <td>${team.drawn}</td>
+                                <td>${team.lost}</td>
+                                <td>${team.goalsFor.toFixed(1)}</td>
+                                <td>${team.goalsAgainst.toFixed(1)}</td>
+                                <td><strong>${team.points}</strong></td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                `;
+                
+                groupDiv.appendChild(table);
+                container.appendChild(groupDiv);
+            });
+        }
+
+        // Update admin round selector
+        function updateAdminRoundSelector() {
+            const select = document.getElementById('adminRoundSelect');
+            if (!select) return;
+            
+            select.innerHTML = '';
+            for (let i = 1; i <= tournament.totalRounds; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = `Giornata ${i}`;
+                if (i === tournament.currentRound) option.selected = true;
+                select.appendChild(option);
+            }
+        }
+
+        // Reset tournament
+        function resetTournament() {
+            if (confirm('Sei sicuro di voler resettare tutto il torneo? Tutti i dati verranno persi.')) {
+                tournament = {
+                    teams: {
+                        A: [],
+                        B: [],
+                        C: [],
+                        D: []
+                    },
+                    matches: [],
+                    currentRound: 1,
+                    totalRounds: 9,
+                    standings: {
+                        A: [],
+                        B: [],
+                        C: [],
+                        D: []
+                    }
+                };
+                
+                // Clear team inputs
+                document.querySelectorAll('.team-input').forEach(input => input.value = '');
+                
+                // Clear displays
+                const calendarContainer = document.getElementById('calendarContainer');
+                const resultsDisplay = document.getElementById('resultsDisplay');
+                const adminMatches = document.getElementById('adminMatchesContainer');
+                const roundMatches = document.getElementById('roundMatchesList');
+                const standings = document.getElementById('standingsContainer');
+                const roundSelect = document.getElementById('roundSelect');
+                const adminSelect = document.getElementById('adminRoundSelect');
+                
+                if (calendarContainer) calendarContainer.innerHTML = '';
+                if (resultsDisplay) resultsDisplay.innerHTML = '';
+                if (adminMatches) adminMatches.innerHTML = '';
+                if (roundMatches) roundMatches.innerHTML = '';
+                if (standings) standings.innerHTML = '';
+                if (roundSelect) roundSelect.innerHTML = '';
+                if (adminSelect) adminSelect.innerHTML = '';
+                
+                localStorage.removeItem('fantacalcio_tournament');
+                alert('Torneo resettato con successo!');
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Pre-populate teams and calendar
+            setupPredefinedTournament();
+            loadTournament();
+            
+            // Initialize team selectors after loading
+            setTimeout(() => {
+                updateTeamSelectors();
+                updateRoundSelector();
+                updateAdminRoundSelector();
+                if (tournament.matches.length > 0) {
+                    showSetupForRound(1);
+                    displayRoundView(tournament.currentRound);
+                    displayAdminRound(tournament.currentRound);
+                }
+            }, 100);
+        });
+
+        // Setup predefined tournament
+        function setupPredefinedTournament() {
+            // Set up teams
+            tournament.teams = {
+                A: ['Sesko', 'Rocks', 'SohMatta', 'FDP'],
+                B: ['Lang', 'Energy', 'Napolethanos', 'Abyssinian'],
+                C: ['Padre Tempo', 'One Pisa', 'Cani', 'Qara'],
+                D: ['Rubin', 'Fessa', 'Fredin', 'Come Va']
+            };
+            
+            // Populate team inputs
+            Object.keys(tournament.teams).forEach(group => {
+                tournament.teams[group].forEach((team, index) => {
+                    const input = document.querySelector(`[data-group="${group}"][data-team="${index}"]`);
+                    if (input) input.value = team;
+                });
+            });
+            
+            // Initialize standings
+            initializeStandings();
+            
+            // Set up matches
+            tournament.matches = [
+                // Giornata 1
+                {round: 1, group: 'A', team1: 'Sesko', team2: 'Rocks', team1Index: 0, team2Index: 1, team1Group: 'A', team2Group: 'A', score1: '', score2: '', played: false},
+                {round: 1, group: 'A', team1: 'SohMatta', team2: 'FDP', team1Index: 2, team2Index: 3, team1Group: 'A', team2Group: 'A', score1: '', score2: '', played: false},
+                {round: 1, group: 'B', team1: 'Lang', team2: 'Energy', team1Index: 0, team2Index: 1, team1Group: 'B', team2Group: 'B', score1: '', score2: '', played: false},
+                {round: 1, group: 'B', team1: 'Napolethanos', team2: 'Abyssinian', team1Index: 2, team2Index: 3, team1Group: 'B', team2Group: 'B', score1: '', score2: '', played: false},
+                {round: 1, group: 'C', team1: 'Padre Tempo', team2: 'One Pisa', team1Index: 0, team2Index: 1, team1Group: 'C', team2Group: 'C', score1: '', score2: '', played: false},
+                {round: 1, group: 'C', team1: 'Cani', team2: 'Qara', team1Index: 2, team2Index: 3, team1Group: 'C', team2Group: 'C', score1: '', score2: '', played: false},
+                {round: 1, group: 'D', team1: 'Rubin', team2: 'Fessa', team1Index: 0, team2Index: 1, team1Group: 'D', team2Group: 'D', score1: '', score2: '', played: false},
+                {round: 1, group: 'D', team1: 'Fredin', team2: 'Come Va', team1Index: 2, team2Index: 3, team1Group: 'D', team2Group: 'D', score1: '', score2: '', played: false},
+                
+                // Giornata 2
+                {round: 2, group: 'A', team1: 'Rocks', team2: 'SohMatta', team1Index: 1, team2Index: 2, team1Group: 'A', team2Group: 'A', score1: '', score2: '', played: false},
+                {round: 2, group: 'A', team1: 'Sesko', team2: 'FDP', team1Index: 0, team2Index: 3, team1Group: 'A', team2Group: 'A', score1: '', score2: '', played: false},
+                {round: 2, group: 'B', team1: 'Lang', team2: 'Napolethanos', team1Index: 0, team2Index: 2, team1Group: 'B', team2Group: 'B', score1: '', score2: '', played: false},
+                {round: 2, group: 'B', team1: 'Abyssinian', team2: 'Energy', team1Index: 3, team2Index: 1, team1Group: 'B', team2Group: 'B', score1: '', score2: '', played: false},
+                {round: 2, group: 'C', team1: 'Padre Tempo', team2: 'Qara', team1Index: 0, team2Index: 3, team1Group: 'C', team2Group: 'C', score1: '', score2: '', played: false},
+                {round: 2, group: 'C', team1: 'Cani', team2: 'One Pisa', team1Index: 2, team2Index: 1, team1Group: 'C', team2Group: 'C', score1: '', score2: '', played: false},
+                {round: 2, group: 'D', team1: 'Rubin', team2: 'Fredin', team1Index: 0, team2Index: 2, team1Group: 'D', team2Group: 'D', score1: '', score2: '', played: false},
+                {round: 2, group: 'D', team1: 'Come Va', team2: 'Fessa', team1Index: 3, team2Index: 1, team1Group: 'D', team2Group: 'D', score1: '', score2: '', played: false},
+                
+                // Giornata 3
+                {round: 3, group: 'A', team1: 'Rocks', team2: 'FDP', team1Index: 1, team2Index: 3, team1Group: 'A', team2Group: 'A', score1: '', score2: '', played: false},
+                {round: 3, group: 'B', team1: 'Lang', team2: 'Abyssinian', team1Index: 0, team2Index: 3, team1Group: 'B', team2Group: 'B', score1: '', score2: '', played: false},
+                {round: 3, group: 'C', team1: 'Cani', team2: 'Padre Tempo', team1Index: 2, team2Index: 0, team1Group: 'C', team2Group: 'C', score1: '', score2: '', played: false},
+                {round: 3, group: 'D', team1: 'Rubin', team2: 'Come Va', team1Index: 0, team2Index: 3, team1Group: 'D', team2Group: 'D', score1: '', score2: '', played: false},
+                
+                // Giornata 4
+                {round: 4, group: 'A', team1: 'Rocks', team2: 'Sesko', team1Index: 1, team2Index: 0, team1Group: 'A', team2Group: 'A', score1: '', score2: '', played: false},
+                {round: 4, group: 'B', team1: 'Lang', team2: 'Napolethanos', team1Index: 0, team2Index: 2, team1Group: 'B', team2Group: 'B', score1: '', score2: '', played: false},
+                {round: 4, group: 'C', team1: 'Cani', team2: 'Qara', team1Index: 2, team2Index: 3, team1Group: 'C', team2Group: 'C', score1: '', score2: '', played: false},
+                {round: 4, group: 'D', team1: 'Come Va', team2: 'Fessa', team1Index: 3, team2Index: 1, team1Group: 'D', team2Group: 'D', score1: '', score2: '', played: false},
+                
+                // Giornata 5
+                {round: 5, group: 'A', team1: 'FDP', team2: 'Sesko', team1Index: 3, team2Index: 0, team1Group: 'A', team2Group: 'A', score1: '', score2: '', played: false},
+                {round: 5, group: 'B', team1: 'Energy', team2: 'Lang', team1Index: 1, team2Index: 0, team1Group: 'B', team2Group: 'B', score1: '', score2: '', played: false},
+                {round: 5, group: 'C', team1: 'Qara', team2: 'One Pisa', team1Index: 3, team2Index: 1, team1Group: 'C', team2Group: 'C', score1: '', score2: '', played: false},
+                {round: 5, group: 'D', team1: 'Fessa', team2: 'Rubin', team1Index: 1, team2Index: 0, team1Group: 'D', team2Group: 'D', score1: '', score2: '', played: false},
+                
+                // Giornata 6
+                {round: 6, group: 'A', team1: 'Rocks', team2: 'FDP', team1Index: 1, team2Index: 3, team1Group: 'A', team2Group: 'A', score1: '', score2: '', played: false},
+                {round: 6, group: 'B', team1: 'Lang', team2: 'Abyssinian', team1Index: 0, team2Index: 3, team1Group: 'B', team2Group: 'B', score1: '', score2: '', played: false},
+                {round: 6, group: 'C', team1: 'Cani', team2: 'One Pisa', team1Index: 2, team2Index: 1, team1Group: 'C', team2Group: 'C', score1: '', score2: '', played: false},
+                {round: 6, group: 'D', team1: 'Come Va', team2: 'Rubin', team1Index: 3, team2Index: 0, team1Group: 'D', team2Group: 'D', score1: '', score2: '', played: false},
+                
+                // Giornata 7
+                {round: 7, group: 'A', team1: 'FDP', team2: 'Sesko', team1Index: 3, team2Index: 0, team1Group: 'A', team2Group: 'A', score1: '', score2: '', played: false},
+                {round: 7, group: 'B', team1: 'Energy', team2: 'Lang', team1Index: 1, team2Index: 0, team1Group: 'B', team2Group: 'B', score1: '', score2: '', played: false},
+                {round: 7, group: 'C', team1: 'Padre Tempo', team2: 'One Pisa', team1Index: 0, team2Index: 1, team1Group: 'C', team2Group: 'C', score1: '', score2: '', played: false},
+                {round: 7, group: 'D', team1: 'Rubin', team2: 'Fessa', team1Index: 0, team2Index: 1, team1Group: 'D', team2Group: 'D', score1: '', score2: '', played: false},
+                
+                // Giornata 8
+                {round: 8, group: 'A', team1: 'Sesko', team2: 'Rocks', team1Index: 0, team2Index: 1, team1Group: 'A', team2Group: 'A', score1: '', score2: '', played: false},
+                {round: 8, group: 'B', team1: 'Lang', team2: 'Napolethanos', team1Index: 0, team2Index: 2, team1Group: 'B', team2Group: 'B', score1: '', score2: '', played: false},
+                {round: 8, group: 'C', team1: 'One Pisa', team2: 'Qara', team1Index: 1, team2Index: 3, team1Group: 'C', team2Group: 'C', score1: '', score2: '', played: false},
+                {round: 8, group: 'D', team1: 'Fredin', team2: 'Rubin', team1Index: 2, team2Index: 0, team1Group: 'D', team2Group: 'D', score1: '', score2: '', played: false},
+                
+                // Giornata 9
+                {round: 9, group: 'A', team1: 'Rocks', team2: 'FDP', team1Index: 1, team2Index: 3, team1Group: 'A', team2Group: 'A', score1: '', score2: '', played: false},
+                {round: 9, group: 'A', team1: 'SohMatta', team2: 'Sesko', team1Index: 2, team2Index: 0, team1Group: 'A', team2Group: 'A', score1: '', score2: '', played: false},
+                {round: 9, group: 'B', team1: 'Abyssinian', team2: 'Lang', team1Index: 3, team2Index: 0, team1Group: 'B', team2Group: 'B', score1: '', score2: '', played: false},
+                {round: 9, group: 'B', team1: 'Energy', team2: 'Napolethanos', team1Index: 1, team2Index: 2, team1Group: 'B', team2Group: 'B', score1: '', score2: '', played: false},
+                {round: 9, group: 'C', team1: 'Padre Tempo', team2: 'Qara', team1Index: 0, team2Index: 3, team1Group: 'C', team2Group: 'C', score1: '', score2: '', played: false},
+                {round: 9, group: 'C', team1: 'Cani', team2: 'One Pisa', team1Index: 2, team2Index: 1, team1Group: 'C', team2Group: 'C', score1: '', score2: '', played: false},
+                {round: 9, group: 'D', team1: 'Come Va', team2: 'Rubin', team1Index: 3, team2Index: 0, team1Group: 'D', team2Group: 'D', score1: '', score2: '', played: false},
+                {round: 9, group: 'D', team1: 'Fessa', team2: 'Fredin', team1Index: 1, team2Index: 2, team1Group: 'D', team2Group: 'D', score1: '', score2: '', played: false}
+            ];
+            
+            saveTournament();
+        }
+    </script>
+</body>
+</html>
