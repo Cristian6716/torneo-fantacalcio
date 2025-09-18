@@ -635,12 +635,19 @@
             localStorage.setItem('fantacalcio_tournament', JSON.stringify(tournament));
         }
 
-        // Enable admin mode
+        // Enable admin mode with password
         function enableAdminMode() {
-            const setupTab = document.querySelector('.tab[onclick="switchTab(\'setup\')"]');
-            if (setupTab) {
-                setupTab.style.display = 'block';
-                alert('Modalità Admin attivata!');
+            const password = prompt('Inserisci la password admin:');
+            if (password === 'Lollipop0') {
+                const setupTab = document.querySelector('.tab[onclick="switchTab(\'setup\')"]');
+                if (setupTab) {
+                    setupTab.style.display = 'block';
+                    alert('🔓 Modalità Admin attivata!');
+                    // Hide the admin button after successful login
+                    document.querySelector('span[onclick="enableAdminMode()"]').style.display = 'none';
+                }
+            } else if (password !== null) { // null means user clicked cancel
+                alert('❌ Password errata!');
             }
         }
 
