@@ -150,14 +150,14 @@
 
         .match-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
             margin-bottom: 20px;
         }
 
         .match-card {
             background: white;
-            padding: 20px;
+            padding: 15px;
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             border: 2px solid #e0e0e0;
@@ -165,7 +165,7 @@
 
         .calendar-match-card {
             background: white;
-            padding: 20px;
+            padding: 15px;
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             border: 2px solid #e0e0e0;
@@ -176,6 +176,7 @@
             align-items: center;
             justify-content: space-between;
             margin-bottom: 15px;
+            gap: 8px;
         }
 
         .calendar-teams {
@@ -183,6 +184,7 @@
             align-items: center;
             justify-content: space-between;
             text-align: center;
+            gap: 8px;
         }
 
         .team-name {
@@ -190,18 +192,24 @@
             color: #2c3e50;
             flex: 1;
             text-align: center;
+            font-size: 14px;
+            word-wrap: break-word;
         }
 
         .calendar-team-name {
             font-weight: 600;
             color: #2c3e50;
             flex: 1;
+            font-size: 14px;
+            word-wrap: break-word;
         }
 
         .vs {
-            margin: 0 15px;
+            margin: 0 5px;
             font-weight: bold;
             color: #7f8c8d;
+            font-size: 12px;
+            flex-shrink: 0;
         }
 
         .score-inputs {
@@ -404,24 +412,56 @@
 
         @media (max-width: 768px) {
             .header h1 {
-                font-size: 2rem;
+                font-size: 1.5rem;
+            }
+
+            .header p {
+                font-size: 0.9rem;
             }
             
             .content {
-                padding: 20px;
+                padding: 15px;
             }
             
             .tabs {
                 flex-direction: column;
+                gap: 5px;
             }
-            
-            .match-teams {
-                flex-direction: column;
-                gap: 10px;
+
+            .tab {
+                padding: 12px;
+                font-size: 14px;
             }
-            
-            .score-inputs {
-                justify-content: center;
+
+            .match-container {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .match-card, .calendar-match-card {
+                padding: 12px;
+            }
+
+            .team-name, .calendar-team-name {
+                font-size: 13px;
+            }
+
+            .vs {
+                font-size: 11px;
+                margin: 0 3px;
+            }
+
+            .results-display {
+                grid-template-columns: 1fr;
+            }
+
+            .standings-table {
+                font-size: 12px;
+            }
+
+            .standings-table th,
+            .standings-table td {
+                padding: 8px 4px;
             }
         }
     </style>
@@ -1292,39 +1332,63 @@
                 
                 // Giornata 3
                 {round: 3, group: 'A', team1: 'Rocks', team2: 'FDP', team1Index: 1, team2Index: 3, team1Group: 'A', team2Group: 'A', score1: '', score2: '', played: false},
+                {round: 3, group: 'A', team1: 'SohMatta', team2: 'Sesko', team1Index: 2, team2Index: 0, team1Group: 'A', team2Group: 'A', score1: '', score2: '', played: false},
                 {round: 3, group: 'B', team1: 'Lang', team2: 'Abyssinian', team1Index: 0, team2Index: 3, team1Group: 'B', team2Group: 'B', score1: '', score2: '', played: false},
+                {round: 3, group: 'B', team1: 'Energy', team2: 'Napolethanos', team1Index: 1, team2Index: 2, team1Group: 'B', team2Group: 'B', score1: '', score2: '', played: false},
                 {round: 3, group: 'C', team1: 'Cani', team2: 'Padre Tempo', team1Index: 2, team2Index: 0, team1Group: 'C', team2Group: 'C', score1: '', score2: '', played: false},
+                {round: 3, group: 'C', team1: 'One Pisa', team2: 'Qara', team1Index: 1, team2Index: 3, team1Group: 'C', team2Group: 'C', score1: '', score2: '', played: false},
                 {round: 3, group: 'D', team1: 'Rubin', team2: 'Come Va', team1Index: 0, team2Index: 3, team1Group: 'D', team2Group: 'D', score1: '', score2: '', played: false},
+                {round: 3, group: 'D', team1: 'Fessa', team2: 'Fredin', team1Index: 1, team2Index: 2, team1Group: 'D', team2Group: 'D', score1: '', score2: '', played: false},
                 
                 // Giornata 4
                 {round: 4, group: 'A', team1: 'Rocks', team2: 'Sesko', team1Index: 1, team2Index: 0, team1Group: 'A', team2Group: 'A', score1: '', score2: '', played: false},
+                {round: 4, group: 'A', team1: 'SohMatta', team2: 'FDP', team1Index: 2, team2Index: 3, team1Group: 'A', team2Group: 'A', score1: '', score2: '', played: false},
                 {round: 4, group: 'B', team1: 'Lang', team2: 'Napolethanos', team1Index: 0, team2Index: 2, team1Group: 'B', team2Group: 'B', score1: '', score2: '', played: false},
+                {round: 4, group: 'B', team1: 'Abyssinian', team2: 'Energy', team1Index: 3, team2Index: 1, team1Group: 'B', team2Group: 'B', score1: '', score2: '', played: false},
                 {round: 4, group: 'C', team1: 'Cani', team2: 'Qara', team1Index: 2, team2Index: 3, team1Group: 'C', team2Group: 'C', score1: '', score2: '', played: false},
+                {round: 4, group: 'C', team1: 'Padre Tempo', team2: 'One Pisa', team1Index: 0, team2Index: 1, team1Group: 'C', team2Group: 'C', score1: '', score2: '', played: false},
                 {round: 4, group: 'D', team1: 'Come Va', team2: 'Fessa', team1Index: 3, team2Index: 1, team1Group: 'D', team2Group: 'D', score1: '', score2: '', played: false},
+                {round: 4, group: 'D', team1: 'Rubin', team2: 'Fredin', team1Index: 0, team2Index: 2, team1Group: 'D', team2Group: 'D', score1: '', score2: '', played: false},
                 
                 // Giornata 5
                 {round: 5, group: 'A', team1: 'FDP', team2: 'Sesko', team1Index: 3, team2Index: 0, team1Group: 'A', team2Group: 'A', score1: '', score2: '', played: false},
+                {round: 5, group: 'A', team1: 'SohMatta', team2: 'Rocks', team1Index: 2, team2Index: 1, team1Group: 'A', team2Group: 'A', score1: '', score2: '', played: false},
                 {round: 5, group: 'B', team1: 'Energy', team2: 'Lang', team1Index: 1, team2Index: 0, team1Group: 'B', team2Group: 'B', score1: '', score2: '', played: false},
+                {round: 5, group: 'B', team1: 'Napolethanos', team2: 'Abyssinian', team1Index: 2, team2Index: 3, team1Group: 'B', team2Group: 'B', score1: '', score2: '', played: false},
                 {round: 5, group: 'C', team1: 'Qara', team2: 'One Pisa', team1Index: 3, team2Index: 1, team1Group: 'C', team2Group: 'C', score1: '', score2: '', played: false},
+                {round: 5, group: 'C', team1: 'Padre Tempo', team2: 'Cani', team1Index: 0, team2Index: 2, team1Group: 'C', team2Group: 'C', score1: '', score2: '', played: false},
                 {round: 5, group: 'D', team1: 'Fessa', team2: 'Rubin', team1Index: 1, team2Index: 0, team1Group: 'D', team2Group: 'D', score1: '', score2: '', played: false},
+                {round: 5, group: 'D', team1: 'Fredin', team2: 'Come Va', team1Index: 2, team2Index: 3, team1Group: 'D', team2Group: 'D', score1: '', score2: '', played: false},
                 
                 // Giornata 6
                 {round: 6, group: 'A', team1: 'Rocks', team2: 'FDP', team1Index: 1, team2Index: 3, team1Group: 'A', team2Group: 'A', score1: '', score2: '', played: false},
+                {round: 6, group: 'A', team1: 'Sesko', team2: 'SohMatta', team1Index: 0, team2Index: 2, team1Group: 'A', team2Group: 'A', score1: '', score2: '', played: false},
                 {round: 6, group: 'B', team1: 'Lang', team2: 'Abyssinian', team1Index: 0, team2Index: 3, team1Group: 'B', team2Group: 'B', score1: '', score2: '', played: false},
+                {round: 6, group: 'B', team1: 'Napolethanos', team2: 'Energy', team1Index: 2, team2Index: 1, team1Group: 'B', team2Group: 'B', score1: '', score2: '', played: false},
                 {round: 6, group: 'C', team1: 'Cani', team2: 'One Pisa', team1Index: 2, team2Index: 1, team1Group: 'C', team2Group: 'C', score1: '', score2: '', played: false},
+                {round: 6, group: 'C', team1: 'Qara', team2: 'Padre Tempo', team1Index: 3, team2Index: 0, team1Group: 'C', team2Group: 'C', score1: '', score2: '', played: false},
                 {round: 6, group: 'D', team1: 'Come Va', team2: 'Rubin', team1Index: 3, team2Index: 0, team1Group: 'D', team2Group: 'D', score1: '', score2: '', played: false},
+                {round: 6, group: 'D', team1: 'Fessa', team2: 'Fredin', team1Index: 1, team2Index: 2, team1Group: 'D', team2Group: 'D', score1: '', score2: '', played: false},
                 
                 // Giornata 7
                 {round: 7, group: 'A', team1: 'FDP', team2: 'Sesko', team1Index: 3, team2Index: 0, team1Group: 'A', team2Group: 'A', score1: '', score2: '', played: false},
+                {round: 7, group: 'A', team1: 'Rocks', team2: 'SohMatta', team1Index: 1, team2Index: 2, team1Group: 'A', team2Group: 'A', score1: '', score2: '', played: false},
                 {round: 7, group: 'B', team1: 'Energy', team2: 'Lang', team1Index: 1, team2Index: 0, team1Group: 'B', team2Group: 'B', score1: '', score2: '', played: false},
+                {round: 7, group: 'B', team1: 'Abyssinian', team2: 'Napolethanos', team1Index: 3, team2Index: 2, team1Group: 'B', team2Group: 'B', score1: '', score2: '', played: false},
                 {round: 7, group: 'C', team1: 'Padre Tempo', team2: 'One Pisa', team1Index: 0, team2Index: 1, team1Group: 'C', team2Group: 'C', score1: '', score2: '', played: false},
+                {round: 7, group: 'C', team1: 'Cani', team2: 'Qara', team1Index: 2, team2Index: 3, team1Group: 'C', team2Group: 'C', score1: '', score2: '', played: false},
                 {round: 7, group: 'D', team1: 'Rubin', team2: 'Fessa', team1Index: 0, team2Index: 1, team1Group: 'D', team2Group: 'D', score1: '', score2: '', played: false},
+                {round: 7, group: 'D', team1: 'Come Va', team2: 'Fredin', team1Index: 3, team2Index: 2, team1Group: 'D', team2Group: 'D', score1: '', score2: '', played: false},
                 
                 // Giornata 8
                 {round: 8, group: 'A', team1: 'Sesko', team2: 'Rocks', team1Index: 0, team2Index: 1, team1Group: 'A', team2Group: 'A', score1: '', score2: '', played: false},
+                {round: 8, group: 'A', team1: 'FDP', team2: 'SohMatta', team1Index: 3, team2Index: 2, team1Group: 'A', team2Group: 'A', score1: '', score2: '', played: false},
                 {round: 8, group: 'B', team1: 'Lang', team2: 'Napolethanos', team1Index: 0, team2Index: 2, team1Group: 'B', team2Group: 'B', score1: '', score2: '', played: false},
+                {round: 8, group: 'B', team1: 'Energy', team2: 'Abyssinian', team1Index: 1, team2Index: 3, team1Group: 'B', team2Group: 'B', score1: '', score2: '', played: false},
                 {round: 8, group: 'C', team1: 'One Pisa', team2: 'Qara', team1Index: 1, team2Index: 3, team1Group: 'C', team2Group: 'C', score1: '', score2: '', played: false},
+                {round: 8, group: 'C', team1: 'Padre Tempo', team2: 'Cani', team1Index: 0, team2Index: 2, team1Group: 'C', team2Group: 'C', score1: '', score2: '', played: false},
                 {round: 8, group: 'D', team1: 'Fredin', team2: 'Rubin', team1Index: 2, team2Index: 0, team1Group: 'D', team2Group: 'D', score1: '', score2: '', played: false},
+                {round: 8, group: 'D', team1: 'Fessa', team2: 'Come Va', team1Index: 1, team2Index: 3, team1Group: 'D', team2Group: 'D', score1: '', score2: '', played: false},
                 
                 // Giornata 9
                 {round: 9, group: 'A', team1: 'Rocks', team2: 'FDP', team1Index: 1, team2Index: 3, team1Group: 'A', team2Group: 'A', score1: '', score2: '', played: false},
