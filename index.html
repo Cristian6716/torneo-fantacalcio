@@ -439,15 +439,29 @@
             }
 
             .match-card, .calendar-match-card {
-                padding: 15px;
+                padding: 12px;
             }
 
-            .calendar-score-numbers {
-                font-size: 1.3rem;
-            }
-
-            .calendar-result {
+            .team-name, .calendar-team-name {
                 font-size: 13px;
+            }
+
+            .vs {
+                font-size: 11px;
+                margin: 0 3px;
+            }
+
+            .results-display {
+                grid-template-columns: 1fr;
+            }
+
+            .standings-table {
+                font-size: 12px;
+            }
+
+            .standings-table th,
+            .standings-table td {
+                padding: 8px 4px;
             }
         }
     </style>
@@ -588,11 +602,19 @@
                     </select>
                 </div>
 
-                <!-- Combined Section -->
+                <!-- Calendar Display Section -->
                 <div class="match-input-section">
-                    <h3>📅 Partite - Giornata <span id="currentRoundDisplayCalendar">1</span></h3>
+                    <h3>📅 Calendario - Giornata <span id="currentRoundDisplayCalendar">1</span></h3>
                     <div id="calendarContainer" class="match-container">
-                        <!-- Matches will be shown here -->
+                        <!-- Calendar matches will be shown here -->
+                    </div>
+                </div>
+
+                <!-- Results Summary Section -->
+                <div class="results-section">
+                    <h3>📋 Risultati - Giornata <span id="currentRoundDisplayResults">1</span></h3>
+                    <div id="resultsDisplay" class="results-display">
+                        <!-- Results will be displayed here -->
                     </div>
                 </div>
             </div>
@@ -642,19 +664,8 @@
                 });
                 updateRoundSelector();
                 updateAdminRoundSelector();
-                
-                // Only update displays if elements exist
-                const calendarContainer = document.getElementById('calendarContainer');
-                const adminContainer = document.getElementById('adminMatchesContainer');
-                
-                if (calendarContainer) {
-                    displayRoundView(tournament.currentRound);
-                }
-                
-                if (adminContainer) {
-                    displayAdminRound(tournament.currentRound);
-                }
-                
+                displayRoundView(tournament.currentRound);
+                displayAdminRound(tournament.currentRound);
                 updateStandings();
             }
         }
@@ -689,16 +700,12 @@
             // Add active to selected tab and content
             const selectedTab = document.querySelector(`[onclick="switchTab('${tabName}')"]`);
             if (selectedTab) selectedTab.classList.add('active');
-            
-            const tabContent = document.getElementById(tabName);
-            if (tabContent) tabContent.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
             
             // Update displays when switching to matches
             if (tabName === 'matches') {
                 updateRoundSelector();
-                if (tournament.currentRound && tournament.matches.length > 0) {
-                    displayRoundView(tournament.currentRound);
-                }
+                displayRoundView(tournament.currentRound);
             } else if (tabName === 'setup') {
                 updateAdminRoundSelector();
                 showSetupForRound(1);
@@ -763,18 +770,13 @@
 
         // Show setup for specific round
         function showSetupForRound(round) {
-            const setupRoundDisplay = document.getElementById('currentSetupRound');
-            if (setupRoundDisplay) {
-                setupRoundDisplay.textContent = round;
-            }
+            document.getElementById('currentSetupRound').textContent = round;
             displayRoundMatches(parseInt(round));
         }
 
         // Display matches for a round in setup mode
         function displayRoundMatches(round) {
             const container = document.getElementById('roundMatchesList');
-            if (!container) return;
-            
             const roundMatches = tournament.matches.filter(match => match.round === round);
             
             if (roundMatches.length === 0) {
@@ -901,8 +903,6 @@
         // Update round selector
         function updateRoundSelector() {
             const select = document.getElementById('roundSelect');
-            if (!select) return;
-            
             select.innerHTML = '';
             for (let i = 1; i <= tournament.totalRounds; i++) {
                 const option = document.createElement('option');
@@ -940,14 +940,10 @@
 
         // Display admin round for results input
         function displayAdminRound(round) {
-            const adminDisplay = document.getElementById('adminRoundDisplay');
-            const container = document.getElementById('adminMatchesContainer');
-            
-            if (!adminDisplay || !container) return; // Exit if elements don't exist
-            
             tournament.currentRound = parseInt(round);
-            adminDisplay.textContent = round;
+            document.getElementById('adminRoundDisplay').textContent = round;
             
+            const container = document.getElementById('adminMatchesContainer');
             container.innerHTML = '';
 
             const roundMatches = tournament.matches.filter(match => match.round === tournament.currentRound);
@@ -1010,8 +1006,6 @@
             const roundMatches = tournament.matches.filter(match => match.round === tournament.currentRound);
             const match = roundMatches[matchIndex];
             
-            if (!match) return;
-            
             if (teamNumber === 1) {
                 match.score1 = score;
             } else {
@@ -1021,13 +1015,40 @@
             match.played = match.score1 !== '' && match.score2 !== '';
             
             // Update result display
-            const resultElement = document.getElementById(`admin-result-${matchIndex}`);
-            if (resultElement) {
-                resultElement.innerHTML = getMatchResult(match);
-                resultElement.className = `match-result ${getMatchResultClass(match)}`;
-            }
+            document.getElementById(`admin-result-${matchIndex}`).innerHTML = getMatchResult(match);
+            document.getElementById(`admin-result-${matchIndex}`).className = `match-result ${getMatchResultClass(match)}`;
             
             saveTournament();
+        }
+
+        // Display results for a specific round
+        function displayResultsForRound(round) {
+            const container = document.getElementById('resultsDisplay');
+            const roundMatches = tournament.matches.filter(match => match.round === parseInt(round));
+            
+            if (roundMatches.length === 0) {
+                container.innerHTML = '<div class="no-results">Nessuna partita programmata per questa giornata</div>';
+                return;
+            }
+            
+            const playedMatches = roundMatches.filter(match => match.played);
+            
+            if (playedMatches.length === 0) {
+                container.innerHTML = '<div class="no-results">Nessun risultato disponibile per questa giornata</div>';
+                return;
+            }
+            
+            container.innerHTML = playedMatches.map(match => `
+                <div class="result-match-card">
+                    <div class="result-teams">
+                        <strong>${match.team1}</strong>
+                        <span>VS</span>
+                        <strong>${match.team2}</strong>
+                    </div>
+                    <div class="result-score">${match.score1} - ${match.score2}</div>
+                    <div class="result-winner">${getMatchResult(match)}</div>
+                </div>
+            `).join('');
         }
 
         // Get match result text
@@ -1131,6 +1152,8 @@
             
             updateStandings();
             saveTournament();
+            
+            alert('Risultati calcolati e classifiche aggiornate!');
         }
 
         // Update standings display
@@ -1259,10 +1282,7 @@
                 if (tournament.matches.length > 0) {
                     showSetupForRound(1);
                     displayRoundView(tournament.currentRound);
-                    const adminContainer = document.getElementById('adminMatchesContainer');
-                    if (adminContainer) {
-                        displayAdminRound(tournament.currentRound);
-                    }
+                    displayAdminRound(tournament.currentRound);
                 }
             }, 100);
         });
