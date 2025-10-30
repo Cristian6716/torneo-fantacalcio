@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MEGA TORNEO FANTACALCISTICO</title>
+    <title>Gestore Torneo Fantacalcio</title>
     <style>
         * {
             margin: 0;
@@ -602,19 +602,11 @@
                     </select>
                 </div>
 
-                <!-- Calendar Display Section -->
+                <!-- Combined Calendar and Results Section -->
                 <div class="match-input-section">
-                    <h3>📅 Calendario - Giornata <span id="currentRoundDisplayCalendar">1</span></h3>
-                    <div id="calendarContainer" class="match-container">
-                        <!-- Calendar matches will be shown here -->
-                    </div>
-                </div>
-
-                <!-- Results Summary Section -->
-                <div class="results-section">
-                    <h3>📋 Risultati - Giornata <span id="currentRoundDisplayResults">1</span></h3>
-                    <div id="resultsDisplay" class="results-display">
-                        <!-- Results will be displayed here -->
+                    <h3>📅 Partite - Giornata <span id="currentRoundDisplayCalendar">1</span></h3>
+                    <div id="combinedContainer" class="match-container">
+                        <!-- Combined calendar and results will be shown here -->
                     </div>
                 </div>
             </div>
@@ -913,29 +905,53 @@
             }
         }
 
-        // Display round for viewing (calendar + results)
+        // Display round for viewing (combined calendar + results)
         function displayRoundView(round) {
             tournament.currentRound = parseInt(round);
             document.getElementById('currentRoundDisplayCalendar').textContent = round;
-            document.getElementById('currentRoundDisplayResults').textContent = round;
             
-            // Display calendar
-            const calendarContainer = document.getElementById('calendarContainer');
+            // Display combined calendar and results
+            const combinedContainer = document.getElementById('combinedContainer');
             const roundMatches = tournament.matches.filter(match => match.round === tournament.currentRound);
             
             if (roundMatches.length === 0) {
-                calendarContainer.innerHTML = '<div class="no-results">Nessuna partita programmata per questa giornata</div>';
+                combinedContainer.innerHTML = '<div class="no-results">Nessuna partita programmata per questa giornata</div>';
             } else {
-                calendarContainer.innerHTML = '';
+                combinedContainer.innerHTML = '';
                 roundMatches.forEach(match => {
-                    const matchCard = createCalendarCard(match);
-                    calendarContainer.appendChild(matchCard);
+                    const matchCard = createCombinedCard(match);
+                    combinedContainer.appendChild(matchCard);
                 });
             }
             
-            // Display results
-            displayResultsForRound(round);
             saveTournament();
+        }
+
+        // Create combined calendar + result card
+        function createCombinedCard(match) {
+            const div = document.createElement('div');
+            div.className = 'combined-match-card';
+            
+            let scoreHTML = '';
+            let resultHTML = '';
+            
+            if (match.played && match.score1 !== '' && match.score2 !== '') {
+                scoreHTML = `<div class="combined-score">${match.score1} - ${match.score2}</div>`;
+                resultHTML = `<div class="combined-result">${getMatchResult(match)}</div>`;
+            } else {
+                scoreHTML = '<div class="no-score">Risultato non disponibile</div>';
+            }
+            
+            div.innerHTML = `
+                <div class="combined-teams">
+                    <div class="combined-team-name">${match.team1}</div>
+                    <div class="vs">VS</div>
+                    <div class="combined-team-name">${match.team2}</div>
+                </div>
+                ${scoreHTML}
+                ${resultHTML}
+            `;
+            return div;
         }
 
         // Display admin round for results input
@@ -1152,8 +1168,6 @@
             
             updateStandings();
             saveTournament();
-            
-            alert('Risultati calcolati e classifiche aggiornate!');
         }
 
         // Update standings display
