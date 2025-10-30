@@ -919,18 +919,33 @@
             document.getElementById('currentRoundDisplayCalendar').textContent = round;
             document.getElementById('currentRoundDisplayResults').textContent = round;
             
-            // Display calendar
-            const calendarContainer = document.getElementById('calendarContainer');
             const roundMatches = tournament.matches.filter(match => match.round === tournament.currentRound);
+            const playedMatches = roundMatches.filter(match => match.played);
             
-            if (roundMatches.length === 0) {
-                calendarContainer.innerHTML = '<div class="no-results">Nessuna partita programmata per questa giornata</div>';
+            // Nascondi/mostra sezioni in base ai risultati disponibili
+            const calendarSection = document.querySelector('.match-input-section');
+            const resultsSection = document.querySelector('.results-section');
+            
+            if (playedMatches.length > 0) {
+                // Ci sono risultati: nascondi calendario, mostra solo risultati
+                calendarSection.style.display = 'none';
+                resultsSection.style.display = 'block';
             } else {
-                calendarContainer.innerHTML = '';
-                roundMatches.forEach(match => {
-                    const matchCard = createCalendarCard(match);
-                    calendarContainer.appendChild(matchCard);
-                });
+                // Non ci sono risultati: mostra calendario, nascondi risultati
+                calendarSection.style.display = 'block';
+                resultsSection.style.display = 'none';
+                
+                // Display calendar
+                const calendarContainer = document.getElementById('calendarContainer');
+                if (roundMatches.length === 0) {
+                    calendarContainer.innerHTML = '<div class="no-results">Nessuna partita programmata per questa giornata</div>';
+                } else {
+                    calendarContainer.innerHTML = '';
+                    roundMatches.forEach(match => {
+                        const matchCard = createCalendarCard(match);
+                        calendarContainer.appendChild(matchCard);
+                    });
+                }
             }
             
             // Display results
