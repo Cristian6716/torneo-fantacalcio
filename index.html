@@ -537,10 +537,10 @@
                             <option value="3">Giornata 3</option>
                             <option value="4">Giornata 4</option>
                             <option value="5">Giornata 5</option>
-                            <option value="6">Giornata 6</option>
-                            <option value="7">Giornata 7</option>
-                            <option value="8">Giornata 8</option>
-                            <option value="9">Giornata 9</option>
+                            <option value="6">Giornata 6 (12)</option>
+                            <option value="7">Giornata 7 (13)</option>
+                            <option value="8">Giornata 8 (15)</option>
+                            <option value="9">Giornata 9 (17)</option>
                         </select>
                     </div>
 
@@ -904,10 +904,21 @@
         function updateRoundSelector() {
             const select = document.getElementById('roundSelect');
             select.innerHTML = '';
+            const roundLabels = {
+                1: 'Giornata 1',
+                2: 'Giornata 2',
+                3: 'Giornata 3',
+                4: 'Giornata 4',
+                5: 'Giornata 5',
+                6: 'Giornata 6 (12)',
+                7: 'Giornata 7 (13)',
+                8: 'Giornata 8 (15)',
+                9: 'Giornata 9 (17)'
+            };
             for (let i = 1; i <= tournament.totalRounds; i++) {
                 const option = document.createElement('option');
                 option.value = i;
-                option.textContent = `Giornata ${i}`;
+                option.textContent = roundLabels[i];
                 if (i === tournament.currentRound) option.selected = true;
                 select.appendChild(option);
             }
@@ -916,8 +927,23 @@
         // Display round for viewing (calendar + results)
         function displayRoundView(round) {
             tournament.currentRound = parseInt(round);
-            document.getElementById('currentRoundDisplayCalendar').textContent = round;
-            document.getElementById('currentRoundDisplayResults').textContent = round;
+            
+            // Map round numbers to display labels
+            const roundLabels = {
+                1: '1',
+                2: '2',
+                3: '3',
+                4: '4',
+                5: '5',
+                6: '6 (12)',
+                7: '7 (13)',
+                8: '8 (15)',
+                9: '9 (17)'
+            };
+            
+            const displayLabel = roundLabels[round] || round;
+            document.getElementById('currentRoundDisplayCalendar').textContent = displayLabel;
+            document.getElementById('currentRoundDisplayResults').textContent = displayLabel;
             
             const roundMatches = tournament.matches.filter(match => match.round === tournament.currentRound);
             const playedMatches = roundMatches.filter(match => match.played);
@@ -956,7 +982,22 @@
         // Display admin round for results input
         function displayAdminRound(round) {
             tournament.currentRound = parseInt(round);
-            document.getElementById('adminRoundDisplay').textContent = round;
+            
+            // Map round numbers to display labels
+            const roundLabels = {
+                1: '1',
+                2: '2',
+                3: '3',
+                4: '4',
+                5: '5',
+                6: '6 (12)',
+                7: '7 (13)',
+                8: '8 (15)',
+                9: '9 (17)'
+            };
+            
+            const displayLabel = roundLabels[round] || round;
+            document.getElementById('adminRoundDisplay').textContent = displayLabel;
             
             const container = document.getElementById('adminMatchesContainer');
             container.innerHTML = '';
@@ -1228,10 +1269,21 @@
             if (!select) return;
             
             select.innerHTML = '';
+            const roundLabels = {
+                1: 'Giornata 1',
+                2: 'Giornata 2',
+                3: 'Giornata 3',
+                4: 'Giornata 4',
+                5: 'Giornata 5',
+                6: 'Giornata 6 (12)',
+                7: 'Giornata 7 (13)',
+                8: 'Giornata 8 (15)',
+                9: 'Giornata 9 (17)'
+            };
             for (let i = 1; i <= tournament.totalRounds; i++) {
                 const option = document.createElement('option');
                 option.value = i;
-                option.textContent = `Giornata ${i}`;
+                option.textContent = roundLabels[i];
                 if (i === tournament.currentRound) option.selected = true;
                 select.appendChild(option);
             }
